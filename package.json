@@ -1,0 +1,32 @@
+{
+  "name": "aether",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:bot": "npm --workspace @aether/bot run dev",
+    "dev:api": "npm --workspace @aether/api run dev",
+    "dev:admin": "npm --workspace @aether/admin run dev"
+  },
+  "version": "1.0.0",
+  "description": "Monorepo starter for a Telegram-based VPN service.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

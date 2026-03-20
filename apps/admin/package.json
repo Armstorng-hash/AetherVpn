@@ -1,0 +1,9 @@
+{
+  "name": "@aether/admin",
+  "private": true,
+  "scripts": {
+    "dev": "echo Admin starter"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

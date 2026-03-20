@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aether VPN</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(180deg, #061225 0%, #0a1a36 100%);
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 420px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-bottom: 32px;
+    }
+
+    .power-wrap {
+      position: relative;
+      width: 240px;
+      height: 240px;
+      margin: 0 auto 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .ring {
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      border: 2px solid rgba(90, 150, 255, 0.18);
+      box-shadow:
+        0 0 24px rgba(0, 80, 255, 0.12),
+        inset 0 0 24px rgba(0, 80, 255, 0.08);
+    }
+
+    .pulse {
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      border: 2px solid rgba(90, 150, 255, 0.6);
+      opacity: 0;
+      transform: scale(0.9);
+    }
+
+    .pulse.active {
+      animation: pulseAnim 1.6s infinite;
+    }
+
+    @keyframes pulseAnim {
+      0% {
+        transform: scale(0.92);
+        opacity: 0.75;
+      }
+      100% {
+        transform: scale(1.22);
+        opacity: 0;
+      }
+    }
+
+    .btn {
+      width: 165px;
+      height: 165px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 36px;
+      font-weight: 700;
+      color: white;
+      background: radial-gradient(circle at 30% 30%, #1b4eff, #07184a);
+      box-shadow:
+        0 0 24px rgba(27, 78, 255, 0.45),
+        0 0 48px rgba(27, 78, 255, 0.18);
+      transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+      position: relative;
+      z-index: 2;
+    }
+
+    .btn:hover {
+      transform: scale(1.03);
+    }
+
+    .btn.on {
+      background: radial-gradient(circle at 30% 30%, #2f7cff, #0c2e88);
+      box-shadow:
+        0 0 28px rgba(47, 124, 255, 0.5),
+        0 0 52px rgba(47, 124, 255, 0.22);
+    }
+
+    .status {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .status-text {
+      opacity: 0.8;
+      font-size: 14px;
+    }
+
+    .card {
+      margin-top: 28px;
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      text-align: left;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .row:last-child {
+      margin-bottom: 0;
+    }
+
+    .label {
+      opacity: 0.7;
+    }
+
+    .value {
+      font-weight: 700;
+    }
+
+    .version {
+      margin-top: 18px;
+      font-size: 13px;
+      opacity: 0.6;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="title">Aether VPN</div>
+    <div class="subtitle">Темно-синий Mini App с кнопкой ON / OFF</div>
+
+    <div class="power-wrap">
+      <div class="ring"></div>
+      <div class="pulse" id="pulse"></div>
+      <button class="btn" id="toggleBtn">OFF</button>
+    </div>
+
+    <div class="status" id="status">Отключено</div>
+    <div class="status-text" id="statusText">Нажми кнопку, чтобы включить VPN</div>
+
+    <div class="card">
+      <div class="row">
+        <span class="label">Сервер</span>
+        <span class="value">Germany #1</span>
+      </div>
+      <div class="row">
+        <span class="label">Протокол</span>
+        <span class="value">WireGuard</span>
+      </div>
+      <div class="row">
+        <span class="label">Статус</span>
+        <span class="value" id="miniStatus">OFF</span>
+      </div>
+    </div>
+
+    <div class="version">Version 1.0</div>
+  </div>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+
+    const btn = document.getElementById('toggleBtn');
+    const status = document.getElementById('status');
+    const statusText = document.getElementById('statusText');
+    const pulse = document.getElementById('pulse');
+    const miniStatus = document.getElementById('miniStatus');
+
+    let isOn = false;
+
+    btn.addEventListener('click', () => {
+      isOn = !isOn;
+
+      if (isOn) {
+        btn.classList.add('on');
+        pulse.classList.add('active');
+        btn.textContent = 'ON';
+        status.textContent = 'Включено';
+        statusText.textContent = 'Aether VPN активно';
+        miniStatus.textContent = 'ON';
+      } else {
+        btn.classList.remove('on');
+        pulse.classList.remove('active');
+        btn.textContent = 'OFF';
+        status.textContent = 'Отключено';
+        statusText.textContent = 'Нажми кнопку, чтобы включить VPN';
+        miniStatus.textContent = 'OFF';
+      }
+    });
+  </script>
+</body>
+</html>

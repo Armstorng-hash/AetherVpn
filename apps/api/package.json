@@ -1,0 +1,16 @@
+{
+  "name": "@aether/api",
+  "private": true,
+  "scripts": {
+    "dev": "ts-node src/main.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "fastify": "^5.0.0"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3",
+    "@types/node": "^22.7.4"
+  }
+}
